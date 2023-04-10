@@ -12,6 +12,12 @@
 - O projeto foi solicitado pelo professor do curso MTEC-Desenvolvimento de Sistemas na Etec Cidade Tiradentes, Everson Willian Pereira Bacelli.
 
 #
+### DESENVOLVEDORES
+
+- <b>*Kaique Souza Santos*</b>: Back-End 
+- <b>*Wiliam Melo da Mota*</b>: Mobile
+
+#
 ### TELAS
 
 <p align="center">
