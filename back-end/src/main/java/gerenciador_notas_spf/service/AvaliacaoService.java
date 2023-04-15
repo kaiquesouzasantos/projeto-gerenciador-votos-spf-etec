@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -66,7 +67,7 @@ public class AvaliacaoService {
     }
 
     private void verifyLimitAvaliacao(AvaliacaoDTO avaliacao) {
-        if(avaliacaoRepository.findAllByApresentacao(avaliacao.getApresentacao()).get().size() > LIMITE_PROFESSORES)
+        if(avaliacaoRepository.countByApresentacao(avaliacao.getApresentacao()) >= LIMITE_PROFESSORES)
             throw new ExceptionGeneric("NUMERO DE AVALIACOES EXCEDIDO", "NUMERO DE AVALIACOES EXCEDIDO", HttpStatus.CONFLICT.value());
     }
 
@@ -81,19 +82,15 @@ public class AvaliacaoService {
     }
 
     private Double returnNotaLimit(AvaliacaoDTO avaliacao) {
-        String apresentacao = apresentacaoRepository
-                .findById(avaliacao.getApresentacao())
-                .map(ApresentacaoModel::getNome)
-                .map(String::toUpperCase)
-                .orElseThrow(
-                    () -> new ExceptionGeneric("APRESENTACAO INEXISTENTE NA BASE DE DADOS", "APRESENTACAO INEXISTENTE NA BASE DE DADOS", HttpStatus.BAD_REQUEST.value())
-                );
+        Optional<ApresentacaoModel> apresentacao = apresentacaoRepository.findById(avaliacao.getApresentacao());
 
-        return APRESENTACOES.get(apresentacao) / LIMITE_PROFESSORES;
+        if(apresentacao.isEmpty())
+            throw new ExceptionGeneric("APRESENTACAO INEXISTENTE NA BASE DE DADOS", "APRESENTACAO INEXISTENTE NA BASE DE DADOS", HttpStatus.BAD_REQUEST.value());
+        return APRESENTACOES.get(apresentacao.map(ApresentacaoModel::getNome).map(String::toUpperCase).get()) / LIMITE_PROFESSORES;
     }
 
     private boolean existsSameAvaliacaoWithProfessor(UUID apresentacaoId,UUID professorId) {
-        return avaliacaoRepository.existsByApresentacaoAndProfessor(apresentacaoId, professorId);
+        return avaliacaoRepository.countByApresentacaoAndProfessor(apresentacaoId, professorId) > 1;
     }
 
     private boolean existsForeing(UUID apresentacaoId, UUID professorId) {

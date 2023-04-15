@@ -24,16 +24,14 @@ public class ApresentacaoService {
     private final AvaliacaoRepository avaliacaoRepository;
     private final SalaRepository salaRepository;
 
+    private static final List<String> APRESENTACOES = List.of("GRITO DE GUERRA", "SOSIA/PARODIA", "PAINEL", "SHOW DE TALENTOS");
+
     @Transactional(rollbackOn = ExceptionGeneric.class)
     public ApresentacaoModel save(ApresentacaoDTO apresentacao) {
-        if(!this.existsForeing(apresentacao.getSala()))
-            throw new ExceptionGeneric("SALA INVALIDA", "SALA INVALIDA", HttpStatus.BAD_REQUEST.value());
-
-        if(this.existsSameApresentacaoWithNomeAndSala(apresentacao.getNome(), apresentacao.getSala()))
-            throw new ExceptionGeneric("APRESENTACAO JA EXISTENTE", "APRESENTACAO JA EXISTENTE", HttpStatus.CONFLICT.value());
-
-        if(this.listAllBySala(apresentacao.getSala()).size() > 4)
-            throw new ExceptionGeneric("NUMERO DE APRESENTACOES EXCEDIDO", "NUMERO DE APRESENTACOES EXCEDIDO", HttpStatus.CONFLICT.value());
+        verifyNome(apresentacao);
+        verifyForeign(apresentacao);
+        verifySameApresentacao(apresentacao);
+        verifiLimitApresentacao(apresentacao);
 
         return this.getFull(apresentacaoRepository.save(new ApresentacaoMapper().toMapper(apresentacao)));
     }
@@ -77,6 +75,26 @@ public class ApresentacaoService {
         );
 
         return apresentacao;
+    }
+
+    private void verifyForeign(ApresentacaoDTO apresentacao) {
+        if(!this.existsForeing(apresentacao.getSala()))
+            throw new ExceptionGeneric("SALA INVALIDA", "SALA INVALIDA", HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void verifyNome(ApresentacaoDTO apresentacao) {
+        if(!APRESENTACOES.contains(apresentacao.getNome()))
+            throw new ExceptionGeneric("APRESENTACAO INVALIDA", "APRESENTACAO INVALIDA", HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void verifySameApresentacao(ApresentacaoDTO apresentacao) {
+        if(this.existsSameApresentacaoWithNomeAndSala(apresentacao.getNome(), apresentacao.getSala()))
+            throw new ExceptionGeneric("APRESENTACAO JA EXISTENTE", "APRESENTACAO JA EXISTENTE", HttpStatus.CONFLICT.value());
+    }
+
+    private void verifiLimitApresentacao(ApresentacaoDTO apresentacao) {
+        if(this.listAllBySala(apresentacao.getSala()).size() > 4)
+            throw new ExceptionGeneric("NUMERO DE APRESENTACOES EXCEDIDO", "NUMERO DE APRESENTACOES EXCEDIDO", HttpStatus.CONFLICT.value());
     }
 
     private boolean existsSameApresentacaoWithNomeAndSala(String nome, UUID salaId) {

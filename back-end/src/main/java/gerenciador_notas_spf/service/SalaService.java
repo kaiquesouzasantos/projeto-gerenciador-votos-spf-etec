@@ -20,9 +20,7 @@ public class SalaService {
 
     @Transactional(rollbackOn = ExceptionGeneric.class)
     public SalaModel save(SalaDTO sala) {
-        if(this.existsSameSalaWithNome(sala.getNome()))
-            throw new ExceptionGeneric("SALA JA EXISTENTE", "SALA JA EXISTENTE", HttpStatus.CONFLICT.value());
-
+        verifySameNome(sala);
         return salaRepository.save(new SalaMapper().toMapper(sala));
     }
 
@@ -37,6 +35,11 @@ public class SalaService {
     public SalaModel findById(UUID id) {
         return salaRepository.findById(id)
                 .orElseThrow(() -> new ExceptionGeneric("SALA NO CONTENT", "SALA NOT FOUND", HttpStatus.NO_CONTENT.value()));
+    }
+
+    private void verifySameNome(SalaDTO sala) {
+        if(this.existsSameSalaWithNome(sala.getNome()))
+            throw new ExceptionGeneric("SALA JA EXISTENTE", "SALA JA EXISTENTE", HttpStatus.CONFLICT.value());
     }
 
     private boolean existsSameSalaWithNome(String nome) {

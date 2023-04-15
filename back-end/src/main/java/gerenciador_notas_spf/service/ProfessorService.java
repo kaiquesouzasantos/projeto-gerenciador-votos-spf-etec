@@ -20,9 +20,7 @@ public class ProfessorService {
 
     @Transactional(rollbackOn = ExceptionGeneric.class)
     public ProfessorModel save(ProfessorDTO professor) {
-        if(this.existsSameProfessorWithNomeOrEmail(professor.getNome(), professor.getEmail()))
-            throw new ExceptionGeneric("PROFESSOR JA EXISTENTE", "PROFESSOR JA EXISTENTE", HttpStatus.CONFLICT.value());
-
+        verifySameProfessor(professor);
         return professorRepository.save(new ProfessorMapper().toMapper(professor));
     }
 
@@ -42,6 +40,11 @@ public class ProfessorService {
     public ProfessorModel findByEmail(String email) {
         return professorRepository.findByEmail(email)
                 .orElseThrow(() -> new ExceptionGeneric("PROFESSOR NO CONTENT", "PROFESSOR NOT FOUND", HttpStatus.NO_CONTENT.value()));
+    }
+
+    private void verifySameProfessor(ProfessorDTO professor) {
+        if(this.existsSameProfessorWithNomeOrEmail(professor.getNome(), professor.getEmail()))
+            throw new ExceptionGeneric("PROFESSOR JA EXISTENTE", "PROFESSOR JA EXISTENTE", HttpStatus.CONFLICT.value());
     }
 
     public boolean existsProfessorWithEmailAndPassword(String email, String senha) {
