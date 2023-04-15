@@ -10,6 +10,7 @@ import java.util.UUID;
 
 @Repository
 public interface AvaliacaoRepository extends JpaRepository<AvaliacaoModel, UUID> {
-    boolean existsByApresentacaoAndProfessor(UUID apresentacao, UUID professor);
+    long countByApresentacaoAndProfessor(UUID apresentacao, UUID professor);
+    long countByApresentacao(UUID apresentacao);
     Optional<List<AvaliacaoModel>> findAllByApresentacao(UUID apresentacao);
 }
