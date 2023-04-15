@@ -42,7 +42,7 @@
 ### DOCUMENTACAO DA API
 
 ```
-https://gerenciador-votos-spf-etec-ct-production.up.railway.app/swagger-ui/index.html#
+<host>:<porta>/swagger-ui/index.html#
 ```
 
 #
