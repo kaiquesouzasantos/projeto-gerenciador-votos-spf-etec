@@ -36,7 +36,7 @@ public class ProfessorController {
     @GetMapping("/auth")
     public ResponseEntity<String> findAuth(@RequestParam String email, @RequestParam String senha) {
         if(professorService.existsProfessorWithEmailAndPassword(email, senha))
-            return ResponseEntity.status(HttpStatus.OK).body("{'username':'professor','password':'<senha>'}");
+            return ResponseEntity.status(HttpStatus.OK).body("{'username':'professor','password':'<SENHA>'}");
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("{}");
     }
 

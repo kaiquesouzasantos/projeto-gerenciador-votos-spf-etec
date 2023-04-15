@@ -61,8 +61,8 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return new InMemoryUserDetailsManager(
-                User.builder().username("admin").password("{noop}<senha>").roles("ADMIN").build(),
-                User.builder().username("professor").password("{noop}<senha>").roles("PROFESSOR").build()
+                User.builder().username("admin").password("{noop}<SENHA>").roles("ADMIN").build(),
+                User.builder().username("professor").password("{noop}<SENHA>").roles("PROFESSOR").build()
         );
     }
 }
