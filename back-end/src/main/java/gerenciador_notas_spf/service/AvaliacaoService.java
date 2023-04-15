@@ -1,0 +1,102 @@
+package gerenciador_notas_spf.service;
+
+import gerenciador_notas_spf.dto.AvaliacaoDTO;
+import gerenciador_notas_spf.exception.ExceptionGeneric;
+import gerenciador_notas_spf.mapper.AvaliacaoMapper;
+import gerenciador_notas_spf.model.ApresentacaoModel;
+import gerenciador_notas_spf.model.AvaliacaoModel;
+import gerenciador_notas_spf.repository.ApresentacaoRepository;
+import gerenciador_notas_spf.repository.AvaliacaoRepository;
+import gerenciador_notas_spf.repository.ProfessorRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class AvaliacaoService {
+    private final AvaliacaoRepository avaliacaoRepository;
+    private final ProfessorRepository professorRepository;
+    private final ApresentacaoRepository apresentacaoRepository;
+
+    private static final int LIMITE_PROFESSORES = 3;
+    private static final Map<String, Double> APRESENTACOES = Map.of(
+            "GRITO DE GUERRA", 2000.0,
+            "SOSIA/PARODIA", 3500.0,
+            "PAINEL", 3500.0,
+            "SHOW DE TALENTOS", 5000.0
+    );
+
+    @Transactional(rollbackOn = ExceptionGeneric.class)
+    public AvaliacaoModel save(AvaliacaoDTO avaliacao) {
+        verifyForeign(avaliacao);
+        verifySameAvaliacao(avaliacao);
+        verifyLimitAvaliacao(avaliacao);
+        verifyLimitNota(avaliacao);
+
+        return avaliacaoRepository.save(new AvaliacaoMapper().toMapper(avaliacao));
+    }
+
+    public void delete(UUID id) {
+        avaliacaoRepository.deleteById(id);
+    }
+
+    public List<AvaliacaoModel> listAll() {
+        return avaliacaoRepository.findAll();
+    }
+
+    public AvaliacaoModel findById(UUID id) {
+        return avaliacaoRepository.findById(id)
+                .orElseThrow(() -> new ExceptionGeneric("AVALIACAO NO CONTENT", "AVALIACAO NOT FOUND", HttpStatus.NO_CONTENT.value()));
+    }
+
+    private void verifyForeign(AvaliacaoDTO avaliacao) {
+        if(!this.existsForeing(avaliacao.getApresentacao(), avaliacao.getProfessor()))
+            throw new ExceptionGeneric("CHAVES ESTRANGEIRAS INVALIDAS", "CHAVES ESTRANGEIRAS INVALIDAS", HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void verifySameAvaliacao(AvaliacaoDTO avaliacao) {
+        if(this.existsSameAvaliacaoWithProfessor(avaliacao.getApresentacao(), avaliacao.getProfessor()))
+            throw new ExceptionGeneric("AVALIACAO JA ATRIBUIDA", "AVALIACAO JA ATRIBUIDA", HttpStatus.CONFLICT.value());
+    }
+
+    private void verifyLimitAvaliacao(AvaliacaoDTO avaliacao) {
+        if(avaliacaoRepository.findAllByApresentacao(avaliacao.getApresentacao()).get().size() > LIMITE_PROFESSORES)
+            throw new ExceptionGeneric("NUMERO DE AVALIACOES EXCEDIDO", "NUMERO DE AVALIACOES EXCEDIDO", HttpStatus.CONFLICT.value());
+    }
+
+    private void verifyLimitNota(AvaliacaoDTO avaliacao) {
+        Double notaLimite = returnNotaLimit(avaliacao);
+
+        if(avaliacao.getNota() > notaLimite)
+            throw new ExceptionGeneric(
+                    "NOTA ATRIBUIDA ESTA ACIMA DO PERMITIDO",
+                    "NOTA ATRIBUIDA ESTA ACIMA DO PERMITIDO PARA A APRESENTACAO, O LIMITE PARA ESSA APRESENTACAO E DE " + notaLimite + " PONTOS",
+                    HttpStatus.BAD_REQUEST.value());
+    }
+
+    private Double returnNotaLimit(AvaliacaoDTO avaliacao) {
+        String apresentacao = apresentacaoRepository
+                .findById(avaliacao.getApresentacao())
+                .map(ApresentacaoModel::getNome)
+                .map(String::toUpperCase)
+                .orElseThrow(
+                    () -> new ExceptionGeneric("APRESENTACAO INEXISTENTE NA BASE DE DADOS", "APRESENTACAO INEXISTENTE NA BASE DE DADOS", HttpStatus.BAD_REQUEST.value())
+                );
+
+        return APRESENTACOES.get(apresentacao) / LIMITE_PROFESSORES;
+    }
+
+    private boolean existsSameAvaliacaoWithProfessor(UUID apresentacaoId,UUID professorId) {
+        return avaliacaoRepository.existsByApresentacaoAndProfessor(apresentacaoId, professorId);
+    }
+
+    private boolean existsForeing(UUID apresentacaoId, UUID professorId) {
+        return(apresentacaoRepository.existsById(apresentacaoId) || professorRepository.existsById(professorId));
+    }
+}
