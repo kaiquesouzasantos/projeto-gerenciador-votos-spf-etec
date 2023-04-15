@@ -1,5 +1,6 @@
 package gerenciador_notas_spf.controller;
 
+import gerenciador_notas_spf.exception.ExceptionGeneric;
 import gerenciador_notas_spf.model.RelatorioModel;
 import gerenciador_notas_spf.service.ApresentacaoService;
 import gerenciador_notas_spf.service.RelatorioService;
@@ -24,7 +25,11 @@ public class RelatorioController {
 
     @GetMapping("")
     public ResponseEntity<RelatorioModel> findById(@RequestParam UUID salaId) {
-        return ResponseEntity.status(HttpStatus.OK).body(this.getRelatorio(salaId));
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body(this.getRelatorio(salaId));
+        } catch (RuntimeException e){
+            throw new ExceptionGeneric("INFORMACOES INSUFICIENTES", "APRESENTACAO NOT FOUND, INFORMACOES INSUFICIENTES", HttpStatus.NO_CONTENT.value());
+        }
     }
 
     private RelatorioModel getRelatorio(UUID salaId) {
