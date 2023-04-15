@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "SPF - Gerenciador de votos",
+    "slug": "gerenciador-votos-spf-etec-ct",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.wiliammelo.gerenciadorvotosspfetecct"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "7a4d7395-dc23-4794-908d-35b7e9fe40e0"
+      }
+    }
+  }
+}
