@@ -7,8 +7,8 @@
 #
 ### SOBRE
 
-- Projeto desenvolvido com o objetivo de melhorar o funcionamento de votacao e auditoria das apresentacoes realizadas na Semana Paulo Freire.
-- O periodo de levantamento de requisitos e desenvolvimento foi de 05/04/2023 ate XX/04/2023.
+- Projeto desenvolvido com o objetivo de melhorar o funcionamento de votacao e auditoria das apresentacoes realizadas na Semana Paulo Freire, sendo assim, possibilitando uma melhor experiencias dos participantes nessa sequencia de apresentacoes culturais e ludicas.
+- O periodo de levantamento de requisitos e desenvolvimento foi de 05/04/2023 ate 15/04/2023.
 - O projeto foi solicitado pelo professor do curso MTEC-Desenvolvimento de Sistemas na Etec Cidade Tiradentes, Everson Willian Pereira Bacelli.
 
 #
