@@ -21,7 +21,13 @@
 ### TELAS
 
 <p align="center">
-  <img src="" width="500">
+  <img src="shared/telas/tela_inicial.png" width="200">
+  <img src="shared/telas/tela_login.png" width="200">
+  <img src="shared/telas/tela_registro_professor.png" width="200">
+  <img src="shared/telas/tela_avaliacao.png" width="200">
+  <img src="shared/telas/tela_relatorio_01.png" width="200">
+  <img src="shared/telas/tela_relatorio_02.png" width="200">
+  <img src="shared/telas/tela_relatorio_03.png" width="200">
 </p>
 
 #
