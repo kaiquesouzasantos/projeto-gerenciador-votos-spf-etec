@@ -5,6 +5,7 @@ import gerenciador_notas_spf.model.AvaliacaoModel;
 import gerenciador_notas_spf.service.AvaliacaoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class AvaliacaoController {
     }
 
     @PostMapping("/save")
+    @CacheEvict(value = "relatorio", allEntries = true)
     public ResponseEntity<AvaliacaoModel> save(@RequestBody @Valid AvaliacaoDTO avaliacao) {
         return ResponseEntity.status(HttpStatus.CREATED).body(avaliacaoService.save(avaliacao));
     }

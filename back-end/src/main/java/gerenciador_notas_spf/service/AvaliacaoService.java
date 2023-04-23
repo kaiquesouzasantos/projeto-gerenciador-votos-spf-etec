@@ -1,5 +1,6 @@
 package gerenciador_notas_spf.service;
 
+import gerenciador_notas_spf.component.ApresentacaoList;
 import gerenciador_notas_spf.dto.AvaliacaoDTO;
 import gerenciador_notas_spf.exception.ExceptionGeneric;
 import gerenciador_notas_spf.mapper.AvaliacaoMapper;
@@ -26,12 +27,7 @@ public class AvaliacaoService {
     private final ApresentacaoRepository apresentacaoRepository;
 
     private static final int LIMITE_PROFESSORES = 3;
-    private static final Map<String, Double> APRESENTACOES = Map.of(
-            "GRITO DE GUERRA", 2000.0,
-            "SOSIA/PARODIA", 3500.0,
-            "PAINEL", 3500.0,
-            "SHOW DE TALENTOS", 5000.0
-    );
+    private static final Map<String, Double> APRESENTACOES = ApresentacaoList.getMapApresentacoes();
 
     @Transactional(rollbackOn = ExceptionGeneric.class)
     public AvaliacaoModel save(AvaliacaoDTO avaliacao) {

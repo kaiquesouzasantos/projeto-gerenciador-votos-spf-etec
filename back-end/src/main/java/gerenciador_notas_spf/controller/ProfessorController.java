@@ -5,17 +5,21 @@ import gerenciador_notas_spf.model.ProfessorModel;
 import gerenciador_notas_spf.service.ProfessorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.lang.String;
 
 @RestController
 @RequestMapping("/professor")
 @RequiredArgsConstructor
 public class ProfessorController {
+    @Value("${role.professor.password}") private String professorPassword;
+
     private final ProfessorService professorService;
 
     @PostMapping("/save")
@@ -36,7 +40,7 @@ public class ProfessorController {
     @GetMapping("/auth")
     public ResponseEntity<String> findAuth(@RequestParam String email, @RequestParam String senha) {
         if(professorService.existsProfessorWithEmailAndPassword(email, senha))
-            return ResponseEntity.status(HttpStatus.OK).body("{'username':'professor','password':'<SENHA>'}");
+            return ResponseEntity.status(HttpStatus.OK).body("{'username':'professor','password':'"+professorPassword+"'}");
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("{}");
     }
 

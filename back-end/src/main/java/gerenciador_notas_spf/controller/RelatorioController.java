@@ -6,6 +6,7 @@ import gerenciador_notas_spf.service.ApresentacaoService;
 import gerenciador_notas_spf.service.RelatorioService;
 import gerenciador_notas_spf.service.SalaService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,7 @@ public class RelatorioController {
     private final SalaService salaService;
 
     @GetMapping("")
+    @Cacheable("relatorio")
     public ResponseEntity<RelatorioModel> findById(@RequestParam UUID salaId) {
         try{
             return ResponseEntity.status(HttpStatus.OK).body(this.getRelatorio(salaId));

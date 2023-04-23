@@ -12,5 +12,6 @@ import java.util.UUID;
 public interface AvaliacaoRepository extends JpaRepository<AvaliacaoModel, UUID> {
     long countByApresentacaoAndProfessor(UUID apresentacao, UUID professor);
     long countByApresentacao(UUID apresentacao);
+    void deleteAllByApresentacao(UUID apresentacao);
     Optional<List<AvaliacaoModel>> findAllByApresentacao(UUID apresentacao);
 }

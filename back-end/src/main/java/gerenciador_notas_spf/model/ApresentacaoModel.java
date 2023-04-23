@@ -17,11 +17,15 @@ public class ApresentacaoModel {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(unique = true) private String nome;
-
+    @Column(unique = false)
+    private String nome;
     private UUID sala;
 
     @Transient private Double nota;
-
     @Transient private List<AvaliacaoModel> avaliacoes;
+
+    public ApresentacaoModel(String nome, UUID sala) {
+        this.nome = nome;
+        this.sala = sala;
+    }
 }

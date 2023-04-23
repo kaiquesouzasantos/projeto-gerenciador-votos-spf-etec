@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -37,6 +38,11 @@ public class ApresentacaoController {
     public ResponseEntity<Void> delete(@RequestParam UUID id) {
         apresentacaoService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+    }
+
+    @GetMapping("/limites")
+    public ResponseEntity<Map<String, Double>> listApresentacoesLimitadas() {
+        return ResponseEntity.status(HttpStatus.OK).body(apresentacaoService.listApresentacaoLimitada());
     }
 
     @GetMapping("/all")

@@ -10,5 +10,6 @@ import java.util.UUID;
 @Repository
 public interface ApresentacaoRepository extends JpaRepository<ApresentacaoModel, UUID> {
     boolean existsByNomeAndSala(String nome, UUID sala);
+    void deleteAllBySala(UUID sala);
     List<ApresentacaoModel> findAllBySala(UUID sala);
 }

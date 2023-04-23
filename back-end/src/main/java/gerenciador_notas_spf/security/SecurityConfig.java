@@ -1,5 +1,7 @@
 package gerenciador_notas_spf.security;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,7 +22,11 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+    @Value("${role.admin.password}") private String adminPassword;
+    @Value("${role.professor.password}") private String professorPassword;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -32,7 +38,8 @@ public class SecurityConfig {
                                                 "/professor", "/professor/**", "/apresentacao", "/apresentacao/**",
                                                 "/avaliacao", "/avaliacao/**"
                                         ).hasAnyRole("ADMIN", "PROFESSOR")
-                                        .requestMatchers("/relatorio", "/sala", "/sala/**", "/professor/auth").permitAll()
+                                        .requestMatchers("/professor/save").hasAnyRole("ADMIN")
+                                        .requestMatchers("/relatorio", "/sala", "/sala/**", "/professor/auth", "/apresentacao/limites").permitAll()
                                         .anyRequest().authenticated()
                 )
                 .headers().frameOptions().disable().and()
@@ -61,8 +68,8 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return new InMemoryUserDetailsManager(
-                User.builder().username("admin").password("{noop}<SENHA>").roles("ADMIN").build(),
-                User.builder().username("professor").password("{noop}<SENHA>").roles("PROFESSOR").build()
+                User.builder().username("admin").password("{noop}"+adminPassword).roles("ADMIN").build(),
+                User.builder().username("professor").password("{noop}"+professorPassword).roles("PROFESSOR").build()
         );
     }
 }

@@ -1,5 +1,6 @@
 package gerenciador_notas_spf.service;
 
+import gerenciador_notas_spf.component.ApresentacaoList;
 import gerenciador_notas_spf.dto.ApresentacaoDTO;
 import gerenciador_notas_spf.exception.ExceptionGeneric;
 import gerenciador_notas_spf.mapper.ApresentacaoMapper;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -24,16 +26,27 @@ public class ApresentacaoService {
     private final AvaliacaoRepository avaliacaoRepository;
     private final SalaRepository salaRepository;
 
-    private static final List<String> APRESENTACOES = List.of("GRITO DE GUERRA", "SOSIA/PARODIA", "PAINEL", "SHOW DE TALENTOS");
+    private static final List<String> APRESENTACOES = ApresentacaoList.getListApresentacoes();
 
     @Transactional(rollbackOn = ExceptionGeneric.class)
     public ApresentacaoModel save(ApresentacaoDTO apresentacao) {
         verifyNome(apresentacao);
-        verifyForeign(apresentacao);
+        verifyForeign(apresentacao.getSala());
         verifySameApresentacao(apresentacao);
         verifiLimitApresentacao(apresentacao);
 
         return this.getFull(apresentacaoRepository.save(new ApresentacaoMapper().toMapper(apresentacao)));
+    }
+
+    @Transactional(rollbackOn = ExceptionGeneric.class)
+    public void save(UUID sala) {
+        verifyForeign(sala);
+
+        APRESENTACOES.forEach(
+                apresentacao -> {
+                    apresentacaoRepository.save(new ApresentacaoModel(apresentacao, sala));
+                }
+        );
     }
 
     public ApresentacaoModel update(ApresentacaoModel apresentacao) {
@@ -48,11 +61,20 @@ public class ApresentacaoService {
         apresentacaoRepository.deleteById(id);
     }
 
+    @Transactional(rollbackOn = ExceptionGeneric.class)
+    public void deleteAllBySala(UUID salaId) {
+        apresentacaoRepository.deleteAllBySala(salaId);
+    }
+
     public List<ApresentacaoModel> listAll() {
         return apresentacaoRepository.findAll();
     }
     public List<ApresentacaoModel> listAllFull() {
         return apresentacaoRepository.findAll().stream().map(this::getFull).collect(Collectors.toList());
+    }
+
+    public Map<String, Double> listApresentacaoLimitada() {
+        return ApresentacaoList.getMapApresentacoesLimitadas();
     }
 
     public List<ApresentacaoModel> listAllBySala(UUID sala) {
@@ -77,8 +99,8 @@ public class ApresentacaoService {
         return apresentacao;
     }
 
-    private void verifyForeign(ApresentacaoDTO apresentacao) {
-        if(!this.existsForeing(apresentacao.getSala()))
+    private void verifyForeign(UUID sala) {
+        if(!this.existsForeing(sala))
             throw new ExceptionGeneric("SALA INVALIDA", "SALA INVALIDA", HttpStatus.BAD_REQUEST.value());
     }
 
