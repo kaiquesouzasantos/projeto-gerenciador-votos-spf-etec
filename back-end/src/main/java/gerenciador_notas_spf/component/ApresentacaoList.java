@@ -8,10 +8,10 @@ public class ApresentacaoList {
     private static final int PROFESSORES = 3;
     private static final Map<String, Double> APRESENTACOES = Map.of(
             // NOME_APRESENTACAO, LIMITE_PONTUACAO
-            "GRITO DE GUERRA", 2000.0,
-            "SOSIA/PARODIA", 3500.0,
-            "PAINEL", 3500.0,
-            "SHOW DE TALENTOS", 5000.0
+            "GRITO DE GUERRA", 6000.0,
+            "SOSIA/PARODIA", 10500.0,
+            "PAINEL", 10500.0,
+            "SHOW DE TALENTOS", 15000.0
     );
 
     public static Map<String, Double> getMapApresentacoes() {
