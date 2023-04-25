@@ -86,7 +86,7 @@ public class AvaliacaoService {
     }
 
     private boolean existsSameAvaliacaoWithProfessor(UUID apresentacaoId,UUID professorId) {
-        return avaliacaoRepository.countByApresentacaoAndProfessor(apresentacaoId, professorId) > 1;
+        return avaliacaoRepository.countByApresentacaoAndProfessor(apresentacaoId, professorId) > 0;
     }
 
     private boolean existsForeing(UUID apresentacaoId, UUID professorId) {
