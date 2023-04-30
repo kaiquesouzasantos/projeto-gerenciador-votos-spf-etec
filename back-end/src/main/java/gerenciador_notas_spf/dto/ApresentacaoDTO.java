@@ -6,7 +6,7 @@ import java.util.UUID;
 
 @Data
 public class ApresentacaoDTO {
-    @NotEmpty @NotEmpty
+    @NotEmpty
     private String nome;
 
     @NotNull
