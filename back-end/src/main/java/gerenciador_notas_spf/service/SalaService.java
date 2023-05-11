@@ -24,6 +24,7 @@ public class SalaService {
         return salaRepository.save(new SalaMapper().toMapper(sala));
     }
 
+    @Transactional(rollbackOn = ExceptionGeneric.class)
     public void delete(UUID id) {
         salaRepository.deleteById(id);
     }

@@ -45,12 +45,12 @@ public class AvaliacaoService {
     }
 
     public AvaliacaoModel update(AvaliacaoModel avaliacao) {
-        if(avaliacaoRepository.existsById(avaliacao.getId()))
-            return avaliacaoRepository.save(avaliacao);
-        return null;
+        verifyExistsAvaliacao(avaliacao.getId());
+
+        return avaliacaoRepository.save(avaliacao);
     }
 
-    public List<AvaliacaoModel> listAll() {
+    public List<AvaliacaoModel> listAll()  {
         return avaliacaoRepository.findAll();
     }
 
@@ -84,6 +84,11 @@ public class AvaliacaoService {
                     HttpStatus.BAD_REQUEST.value());
     }
 
+    private void verifyExistsAvaliacao(UUID avaliacao) {
+        if(!this.existsAvaliacao(avaliacao))
+            throw new ExceptionGeneric("AVALIACAO INEXISTENTE NA BASE DE DADOS", "AVALIACAO INEXISTENTE NA BASE DE DADOS", HttpStatus.CONFLICT.value());
+    }
+
     private Double returnNotaLimit(AvaliacaoDTO avaliacao) {
         Optional<ApresentacaoModel> apresentacao = apresentacaoRepository.findById(avaliacao.getApresentacao());
 
@@ -98,5 +103,9 @@ public class AvaliacaoService {
 
     private boolean existsForeing(UUID apresentacaoId, UUID professorId) {
         return(apresentacaoRepository.existsById(apresentacaoId) || professorRepository.existsById(professorId));
+    }
+
+    private boolean existsAvaliacao(UUID avaliacaoId) {
+        return avaliacaoRepository.existsById(avaliacaoId);
     }
 }

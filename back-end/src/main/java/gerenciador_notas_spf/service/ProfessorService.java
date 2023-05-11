@@ -30,9 +30,9 @@ public class ProfessorService {
     }
 
     public ProfessorModel update(ProfessorModel professor) {
-        if(professorRepository.existsById(professor.getId()))
-            return professorRepository.save(professor);
-        return null;
+        verifyExistsProfessor(professor.getId());
+
+        return professorRepository.save(professor);
     }
 
     public List<ProfessorModel> listAll() {
@@ -54,11 +54,20 @@ public class ProfessorService {
             throw new ExceptionGeneric("PROFESSOR JA EXISTENTE", "PROFESSOR JA EXISTENTE", HttpStatus.CONFLICT.value());
     }
 
+    private void verifyExistsProfessor(UUID professor) {
+        if(!this.existsProfessor(professor))
+            throw new ExceptionGeneric("PROFESSOR INEXISTENTE NA BASE DE DADOS", "PROFESSOR INEXISTENTE NA BASE DE DADOS", HttpStatus.NO_CONTENT.value());
+    }
+
     public boolean existsProfessorWithEmailAndPassword(String email, String senha) {
         return professorRepository.existsByEmailAndSenha(email, senha);
     }
 
     private boolean existsSameProfessorWithNomeOrEmail(String nome, String email) {
         return professorRepository.existsByNomeOrEmail(nome, email);
+    }
+
+    private boolean existsProfessor(UUID professorId){
+        return professorRepository.existsById(professorId);
     }
 }
