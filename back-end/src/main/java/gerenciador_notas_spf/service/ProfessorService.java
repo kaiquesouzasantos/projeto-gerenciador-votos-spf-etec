@@ -24,8 +24,15 @@ public class ProfessorService {
         return professorRepository.save(new ProfessorMapper().toMapper(professor));
     }
 
+    @Transactional(rollbackOn = ExceptionGeneric.class)
     public void delete(UUID id) {
         professorRepository.deleteById(id);
+    }
+
+    public ProfessorModel update(ProfessorModel professor) {
+        if(professorRepository.existsById(professor.getId()))
+            return professorRepository.save(professor);
+        return null;
     }
 
     public List<ProfessorModel> listAll() {

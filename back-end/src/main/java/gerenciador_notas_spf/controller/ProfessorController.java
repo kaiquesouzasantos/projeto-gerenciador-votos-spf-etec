@@ -27,6 +27,11 @@ public class ProfessorController {
         return ResponseEntity.status(HttpStatus.CREATED).body(professorService.save(professor));
     }
 
+    @PutMapping("")
+    public ResponseEntity<ProfessorModel> update(@RequestBody ProfessorModel professor) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(professorService.update(professor));
+    }
+
     @GetMapping("")
     public ResponseEntity<ProfessorModel> findById(@RequestParam UUID id) {
         return ResponseEntity.status(HttpStatus.OK).body(professorService.findById(id));

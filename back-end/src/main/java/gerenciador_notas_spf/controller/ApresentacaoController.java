@@ -25,7 +25,7 @@ public class ApresentacaoController {
     }
 
     @PutMapping("")
-    public ResponseEntity<ApresentacaoModel> save(@RequestBody ApresentacaoModel apresentacao) {
+    public ResponseEntity<ApresentacaoModel> update(@RequestBody ApresentacaoModel apresentacao) {
         return ResponseEntity.status(HttpStatus.OK).body(apresentacaoService.update(apresentacao));
     }
 

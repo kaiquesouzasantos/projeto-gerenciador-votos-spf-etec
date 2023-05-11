@@ -39,8 +39,15 @@ public class AvaliacaoService {
         return avaliacaoRepository.save(new AvaliacaoMapper().toMapper(avaliacao));
     }
 
+    @Transactional(rollbackOn = ExceptionGeneric.class)
     public void delete(UUID id) {
         avaliacaoRepository.deleteById(id);
+    }
+
+    public AvaliacaoModel update(AvaliacaoModel avaliacao) {
+        if(avaliacaoRepository.existsById(avaliacao.getId()))
+            return avaliacaoRepository.save(avaliacao);
+        return null;
     }
 
     public List<AvaliacaoModel> listAll() {
