@@ -33,7 +33,7 @@ public class AvaliacaoController {
     @PutMapping("")
     @CacheEvict(value = "relatorio", allEntries = true)
     public ResponseEntity<AvaliacaoModel> update(@RequestBody AvaliacaoModel avaliacao) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(avaliacaoService.update(avaliacao));
+        return ResponseEntity.status(HttpStatus.OK).body(avaliacaoService.update(avaliacao));
     }
 
     @DeleteMapping("")
