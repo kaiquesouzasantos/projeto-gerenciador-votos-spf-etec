@@ -39,7 +39,7 @@ public class SecurityConfig {
                                                 "/avaliacao", "/avaliacao/**"
                                         ).hasAnyRole("ADMIN", "PROFESSOR")
                                         .requestMatchers("/professor/save").hasAnyRole("ADMIN")
-                                        .requestMatchers("/relatorio", "/relatorio/classificacado", "/sala", "/sala/**", "/professor/auth", "/apresentacao/limites").permitAll()
+                                        .requestMatchers("/relatorio", "/relatorio/classificado", "/sala", "/sala/**", "/professor/auth", "/apresentacao/limites").permitAll()
                                         .anyRequest().authenticated()
                 )
                 .headers().frameOptions().disable().and()
