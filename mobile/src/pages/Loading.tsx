@@ -5,7 +5,8 @@ import Logo from '../components/Logo';
 // Bibliotecas de terceiros
 import { Center, StatusBar } from 'native-base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFonts } from 'expo-font';
+import { loadAsync } from 'expo-font';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Tipos e constantes
 import { RootStackParamList } from '../../App';
@@ -20,18 +21,39 @@ interface ILoadingProps {
 }
 
 export default function Loading({ navigation }: ILoadingProps) {
-  const [fontsLoaded] = useFonts({
-    'Montserrat-Bold': require('../../assets/fonts/Montserrat-Bold.ttf'),
-    'Montserrat-SemiBold': require('../../assets/fonts/Montserrat-SemiBold.ttf'),
-    'Montserrat-Medium': require('../../assets/fonts/Montserrat-Medium.ttf'),
-  });
+  const queryClient = useQueryClient();
 
+  async function prefetch() {
+    const { data } = await axiosClient.get('/relatorio/classificacao');
+    return data;
+  }
+
+  //Faz o prefetch dos dados de classificao
   useEffect(() => {
-    if (!fontsLoaded) {
-      return;
-    }
     (async () => {
       try {
+        await queryClient.prefetchQuery({
+          queryKey: ['classificacao'],
+          queryFn: prefetch,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+
+    (async () => {
+      try {
+        await loadAsync({
+          'Montserrat-Bold': require('../../assets/fonts/Montserrat-Bold.ttf'),
+          'Montserrat-SemiBold': require('../../assets/fonts/Montserrat-SemiBold.ttf'),
+          'Montserrat-Medium': require('../../assets/fonts/Montserrat-Medium.ttf'),
+        });
+      } catch (error) {
+        console.log(error);
+      }
+
+      try {
+        //Busca informações do professor logado no aparelho e tenta fazer login
         const data = (await JSON.parse(
           await AsyncStorage.getItem('@loggedUserData')
         )) as { nome: string; email: string; senha: string; id: string };
@@ -47,12 +69,11 @@ export default function Loading({ navigation }: ILoadingProps) {
           navigation.navigate('AccessPortal');
         }
       } catch (error) {
+        // Nenhuma informação de usuario foi encontada no aparelho
         navigation.navigate('AccessPortal');
-
-        console.log(error);
       }
     })();
-  }, [fontsLoaded]);
+  }, []);
 
   return (
     <>

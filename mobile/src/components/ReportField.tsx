@@ -1,5 +1,5 @@
 // React e componentes
-import React from 'react';
+import React, { memo } from 'react';
 
 // Bibliotecas de terceiros
 import { Box, Text } from 'native-base';
@@ -9,7 +9,7 @@ interface IReportFieldProps {
   content: string;
 }
 
-export default function ReportField({ content, title }: IReportFieldProps) {
+function ReportField({ content, title }: IReportFieldProps) {
   return (
     <Box py={2} background='gray.100' rounded='md' my={2}>
       <Text fontFamily='Montserrat-SemiBold' pl={2}>
@@ -18,3 +18,5 @@ export default function ReportField({ content, title }: IReportFieldProps) {
     </Box>
   );
 }
+
+export default memo(ReportField);

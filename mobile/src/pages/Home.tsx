@@ -1,11 +1,12 @@
 // React e componentes
 import React, { useEffect, useRef, useState } from 'react';
-import { Platform } from 'react-native';
+import { Platform, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import MyButton from '../components/MyButton';
 import InputField from '../components/InputField';
 import FormTextError from '../components/FormTextError';
 import Logo from '../components/Logo';
 import Heading from '../components/Heading';
+import GradeLimits from '../components/GradeLimits';
 
 // Bibliotecas de terceiros
 import {
@@ -38,6 +39,7 @@ import { RootStackParamList } from '../../App';
 
 import { axiosClient } from '../libs/axios';
 import { axiosProfessor } from '../libs/axiosProfessor';
+import { Limites } from '../interfaces/limites';
 
 const avaliacaoFormSchema = zod.object({
   nota: zod.string().nonempty({ message: 'Campo obrigatório' }),
@@ -56,7 +58,9 @@ export default function Home({ navigation }: IHomeProps) {
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [salas, setSalas] = useState([]);
   const [idSalaSelecionda, setIdSalaSelecionda] = useState('');
-  const [selectedApresentation, setSelectedApresentation] = useState('');
+  const [selectedApresentationId, setSelectedApresentationId] = useState('');
+  const [selectedApresentationName, setSelectedApresentationName] =
+    useState('');
   const [ApresentationError, setApresentationError] = useState('');
   const [apresentations, setApresentations] = useState<
     {
@@ -65,13 +69,15 @@ export default function Home({ navigation }: IHomeProps) {
       sala: string;
     }[]
   >([]);
-
+  const [limites, setLimites] = useState<Limites | {}>({});
+  limites[''];
   const apresentatioDropdownRef = useRef<SelectDropdown>(null);
   const salaDropdownRef = useRef<SelectDropdown>(null);
 
   const { params } = useRoute() as { params: { UserId: string } };
 
   useEffect(() => {
+    //Busca todas as salas
     (async () => {
       const response = (await axiosClient.get(
         'sala/all'
@@ -79,6 +85,7 @@ export default function Home({ navigation }: IHomeProps) {
       setSalas(response.data);
     })();
 
+    //Busca todas as apresentaçoes e armazena no estado apresentations
     (async () => {
       const response: AxiosReponseApresentacaoAll = await axiosClient.get(
         'apresentacao/all'
@@ -91,6 +98,12 @@ export default function Home({ navigation }: IHomeProps) {
         };
       });
       setApresentations([...apresentacoes]);
+    })();
+
+    //Busca informaçoes sobre a nota maxima de cada apresentação e armazena no estado limites
+    (async () => {
+      const response = await axiosClient.get('apresentacao/limites');
+      setLimites(response.data);
     })();
   }, []);
 
@@ -106,14 +119,20 @@ export default function Home({ navigation }: IHomeProps) {
 
   const onSubmit = async ({ avaliacao, nota }: IFormData) => {
     setIsFormLoading(true);
-    if (selectedApresentation && Number(nota) >= 0 && Number(nota) <= 5000) {
+
+    if (
+      selectedApresentationId &&
+      Number(nota) >= 0 &&
+      Number(nota) <= limites[selectedApresentationName]
+    ) {
       try {
         const response = await axiosProfessor.post('avaliacao/save', {
           avaliacao,
           nota: Number(nota),
-          apresentacao: selectedApresentation,
+          apresentacao: selectedApresentationId,
           professor: params.UserId,
         });
+
         if (response.status === 201) {
           Dialog.show({
             type: ALERT_TYPE.SUCCESS,
@@ -123,7 +142,8 @@ export default function Home({ navigation }: IHomeProps) {
           });
         }
         reset();
-        setSelectedApresentation('');
+        setSelectedApresentationId('');
+        setSelectedApresentationName('');
       } catch (error) {
         if (error.response.status === 400) {
           const errorMessage = error.response.data.message;
@@ -149,6 +169,7 @@ export default function Home({ navigation }: IHomeProps) {
               textBody: 'Você já avaliou esta apresentação',
               button: 'OK',
             });
+            setSelectedApresentationName('');
           } else {
             Dialog.show({
               type: ALERT_TYPE.DANGER,
@@ -165,37 +186,42 @@ export default function Home({ navigation }: IHomeProps) {
             button: 'OK',
           });
         }
-        setSelectedApresentation('');
+        setSelectedApresentationId('');
       }
-    } else if (!selectedApresentation) {
+    } else if (!selectedApresentationId) {
       setApresentationError('Selecione uma apresentação!');
     } else if (Number(nota) < 0) {
-      setError('nota', { message: 'A nota nao pode ser menor doque 0' });
-    } else if (Number(nota) > 5000) {
-      setError('nota', { message: 'A nota nao pode ser maior doque 5000' });
+      setError('nota', {
+        message: 'A nota não pode ser menor do que 0 pontos',
+      });
+    } else if (Number(nota) > limites[selectedApresentationName]) {
+      setError('nota', {
+        message:
+          'A nota não pode ser maior do que ' +
+          limites[selectedApresentationName].toFixed(2) + ' pontos'
+      });
+      setIsFormLoading(false);
+      return;
     }
 
+    // Limpa o item selecionado na lista de apresentaçoes
     apresentatioDropdownRef.current.reset();
     setIsFormLoading(false);
+    setSelectedApresentationId('');
   };
-
-  function handleSelectDropdownAprentation(selectedItem: string) {
-    const apresentacaoSelecionada = apresentations.find(
-      (apresentation) => apresentation.nome === selectedItem
-    );
-    setSelectedApresentation(apresentacaoSelecionada.id);
-  }
 
   function handleSelectDropdownSala(selectedItem: string) {
     const salaSelecionada = salas.find((sala) => sala.nome === selectedItem);
     setIdSalaSelecionda(salaSelecionada.id);
-    setSelectedApresentation('');
+    setSelectedApresentationId('');
+    // Limpa o item selecionado na lista de apresentaçoes
     apresentatioDropdownRef.current.reset();
   }
 
   async function logout() {
     reset();
     setApresentationError('');
+    // Limpa o item selecionado na lista de salas
     salaDropdownRef.current.reset();
     await AsyncStorage.removeItem('@loggedUserData');
     navigation.navigate('AccessPortal');
@@ -203,159 +229,176 @@ export default function Home({ navigation }: IHomeProps) {
   return (
     <AlertNotificationRoot theme='light'>
       <StatusBar barStyle='dark-content' backgroundColor='white' />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        flex={1}
-        px={10}
-        background='white'
-      >
-        <ScrollView flex={1}>
-          <Icon
-            as={MaterialIcons}
-            name='logout'
-            size={10}
-            color='red.500'
-            onPress={logout}
-            position='absolute'
-            right={0}
-            top={10}
-            zIndex={9999}
-          />
-          <Logo noMargin />
-          <Heading>Avaliação</Heading>
-          <Text fontFamily='Montserrat-Medium' fontSize='md' mb={10}>
-            Avalie as apresentaçoes aqui.
-          </Text>
-
-          <SelectDropdown
-            data={salas.map((sala) => sala.nome)}
-            onSelect={handleSelectDropdownSala}
-            buttonTextAfterSelection={(selectedItem, index) => {
-              return selectedItem;
-            }}
-            rowTextForSelection={(item, index) => {
-              return item;
-            }}
-            buttonStyle={{
-              width: '100%',
-              height: 45,
-              borderRadius: 5,
-              backgroundColor: 'transparent',
-              borderColor: '#CCC',
-              borderWidth: 1,
-            }}
-            search
-            searchPlaceHolder='Procure uma sala'
-            defaultButtonText='Selecione uma sala'
-            renderDropdownIcon={(isOpen) => {
-              return (
-                <Ionicons
-                  name={isOpen ? 'ios-chevron-up' : 'ios-chevron-down'}
-                  size={24}
-                  color='black'
-                />
-              );
-            }}
-            renderSearchInputLeftIcon={() => {
-              return <AntDesign name={'search1'} color={'#444'} size={18} />;
-            }}
-            ref={salaDropdownRef}
-          />
-          <Box w='full' h={6}></Box>
-          <SelectDropdown
-            data={
-              idSalaSelecionda &&
-              apresentations
-                .filter(
-                  (apresentation) => apresentation.sala == idSalaSelecionda
-                )
-                .map((apresentation) => apresentation.nome)
-            }
-            onSelect={handleSelectDropdownAprentation}
-            buttonTextAfterSelection={(selectedItem, index) => {
-              return selectedItem;
-            }}
-            rowTextForSelection={(item, index) => {
-              return item;
-            }}
-            buttonStyle={{
-              width: '100%',
-              height: 45,
-              borderRadius: 5,
-              backgroundColor: 'transparent',
-              borderColor: '#CCC',
-              borderWidth: 1,
-            }}
-            search
-            searchPlaceHolder='Procure uma apresentação'
-            defaultButtonText='Selecione uma apresentação'
-            renderDropdownIcon={(isOpen) => {
-              return (
-                <Ionicons
-                  name={isOpen ? 'ios-chevron-up' : 'ios-chevron-down'}
-                  size={24}
-                  color='black'
-                />
-              );
-            }}
-            renderSearchInputLeftIcon={() => {
-              return <AntDesign name={'search1'} color={'#444'} size={18} />;
-            }}
-            disabled={idSalaSelecionda === ''}
-            defaultValue={selectedApresentation}
-            ref={apresentatioDropdownRef}
-          />
-          {ApresentationError && (
-            <FormTextError messageError={ApresentationError} />
-          )}
-
-          <VStack flexDir='column' space={6} mt={6}>
-            <Controller
-              name='nota'
-              control={control}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputField
-                  placeholder='Nota'
-                  returnKeyType='next'
-                  onBlur={onBlur}
-                  value={value}
-                  onChangeText={onChange}
-                  iconName='star'
-                  type='number'
-                />
-              )}
+      <TouchableWithoutFeedback style={{ flex: 1 }} onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          flex={1}
+          px={10}
+          background='white'
+        >
+          <ScrollView flex={1}>
+            <Icon
+              as={MaterialIcons}
+              name='logout'
+              size={10}
+              color='red.500'
+              onPress={logout}
+              position='absolute'
+              right={0}
+              top={10}
+              zIndex={9999}
             />
-            {errors.nota && (
-              <FormTextError messageError={errors.nota.message} />
-            )}
-            <Controller
-              name='avaliacao'
-              control={control}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputField
-                  placeholder='Avaliação'
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  value={value}
-                  returnKeyType='next'
-                  multLine
-                />
-              )}
-            />
-            {errors.avaliacao && (
-              <FormTextError messageError={errors.avaliacao.message} />
-            )}
-          </VStack>
+            <Logo noMargin />
+            <Heading>Avaliação</Heading>
+            <Text fontFamily='Montserrat-Medium' fontSize='md' mb={10}>
+              Avalie as apresentaçoes aqui.
+            </Text>
 
-          <MyButton
-            text='Enviar'
-            disabled={isFormLoading}
-            loading={isFormLoading}
-            onPress={handleSubmit(onSubmit)}
-          />
-          <Box w='full' h={10}></Box>
-        </ScrollView>
-      </KeyboardAvoidingView>
+            <SelectDropdown
+              data={salas.map((sala) => sala.nome)}
+              onSelect={handleSelectDropdownSala}
+              buttonTextAfterSelection={(selectedItem, index) => {
+                return selectedItem;
+              }}
+              rowTextForSelection={(item, index) => {
+                return item;
+              }}
+              buttonStyle={{
+                width: '100%',
+                height: 45,
+                borderRadius: 5,
+                backgroundColor: 'transparent',
+                borderColor: '#CCC',
+                borderWidth: 1,
+              }}
+              search
+              searchPlaceHolder='Busque por uma sala'
+              defaultButtonText='Selecione uma sala'
+              renderDropdownIcon={(isOpen) => {
+                return (
+                  <Ionicons
+                    name={isOpen ? 'ios-chevron-up' : 'ios-chevron-down'}
+                    size={24}
+                    color='black'
+                  />
+                );
+              }}
+              renderSearchInputLeftIcon={() => {
+                return <AntDesign name={'search1'} color={'#444'} size={18} />;
+              }}
+              ref={salaDropdownRef}
+            />
+            <Box w='full' h={6}></Box>
+            <SelectDropdown
+              data={
+                idSalaSelecionda &&
+                apresentations
+                  .filter(
+                    (apresentation) => apresentation.sala == idSalaSelecionda
+                  )
+                  .map((apresentation) => apresentation.nome)
+              }
+              onSelect={(selected) => {
+                const apresentacaoSelecionada = apresentations
+                  .filter(
+                    (apresentation) => apresentation.sala === idSalaSelecionda
+                  )
+                  .find((apresentation) => apresentation.nome === selected);
+                setSelectedApresentationId(apresentacaoSelecionada.id);
+                setSelectedApresentationName(selected);
+                setApresentationError('');
+              }}
+              buttonTextAfterSelection={(selectedItem, index) => {
+                return selectedItem;
+              }}
+              rowTextForSelection={(item, index) => {
+                return item;
+              }}
+              buttonStyle={{
+                width: '100%',
+                height: 45,
+                borderRadius: 5,
+                backgroundColor: 'transparent',
+                borderColor: '#CCC',
+                borderWidth: 1,
+              }}
+              search
+              searchPlaceHolder='Busque por uma apresentação'
+              defaultButtonText='Selecione uma apresentação'
+              renderDropdownIcon={(isOpen) => {
+                return (
+                  <Ionicons
+                    name={isOpen ? 'ios-chevron-up' : 'ios-chevron-down'}
+                    size={24}
+                    color='black'
+                  />
+                );
+              }}
+              renderSearchInputLeftIcon={() => {
+                return <AntDesign name={'search1'} color={'#444'} size={18} />;
+              }}
+              disabled={idSalaSelecionda === ''}
+              defaultValue={selectedApresentationId}
+              ref={apresentatioDropdownRef}
+            />
+            {ApresentationError && (
+              <FormTextError messageError={ApresentationError} />
+            )}
+
+            <VStack flexDir='column' space={6} mt={6}>
+              {selectedApresentationName ? (
+                <GradeLimits
+                  max={Number(limites[selectedApresentationName].toFixed(2))}
+                />
+              ) : null}
+
+              <Controller
+                name='nota'
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    placeholder='Nota'
+                    returnKeyType='next'
+                    onBlur={onBlur}
+                    value={value}
+                    onChangeText={onChange}
+                    iconName='star'
+                    type='number'
+                  />
+                )}
+              />
+              {errors.nota && (
+                <FormTextError messageError={errors.nota.message} />
+              )}
+              <Controller
+                name='avaliacao'
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    placeholder='Avaliação'
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    value={value}
+                    returnKeyType='next'
+                    multLine
+                  />
+                )}
+              />
+              {errors.avaliacao && (
+                <FormTextError messageError={errors.avaliacao.message} />
+              )}
+            </VStack>
+
+            <MyButton
+              text='Enviar'
+              disabled={isFormLoading}
+              loading={isFormLoading}
+              onPress={handleSubmit(onSubmit)}
+            />
+            <Box w='full' h={10}></Box>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     </AlertNotificationRoot>
   );
 }

@@ -1,6 +1,6 @@
 // React e componentes
 import React, { useRef, useState } from 'react';
-import { Platform } from 'react-native';
+import { Platform, TouchableWithoutFeedback } from 'react-native';
 import Logo from '../components/Logo';
 import MyButton from '../components/MyButton';
 import FormTextError from '../components/FormTextError';
@@ -29,6 +29,7 @@ import Heading from '../components/Heading';
 import { RootStackParamList } from '../../App';
 
 import { axiosClient } from '../libs/axios';
+import { Keyboard } from 'react-native';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -62,12 +63,6 @@ const RegisterFormSchema = zod.object({
 type IFormData = zod.infer<typeof RegisterFormSchema>;
 
 export default function Login({ navigation }: IRegisterProps) {
-  const [fontsLoaded] = useFonts({
-    'Montserrat-Bold': require('../../assets/fonts/Montserrat-Bold.ttf'),
-    'Montserrat-SemiBold': require('../../assets/fonts/Montserrat-SemiBold.ttf'),
-    'Montserrat-Medium': require('../../assets/fonts/Montserrat-Medium.ttf'),
-  });
-
   const PasswordInputRef = useRef<InputProps>(null);
   const EmailInputRef = useRef<InputProps>(null);
 
@@ -108,7 +103,6 @@ export default function Login({ navigation }: IRegisterProps) {
           );
 
           navigation.navigate('Home', { UserId: result.data.id });
-          console.log('Informaçoes do usuario salvas no aparelho');
         } catch (error) {
           console.log('Erro ao salvar informaçoes no aparelho', error);
         }
@@ -134,104 +128,102 @@ export default function Login({ navigation }: IRegisterProps) {
     navigation.navigate('Login');
   }
 
-  if (!fontsLoaded) {
-    return <Text>Loading Fonts...</Text>;
-  }
-
   return (
     <>
       <StatusBar barStyle='dark-content' backgroundColor='white' />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        flex={1}
-        px={10}
-        background='white'
-      >
-        <ScrollView>
-          <Logo />
-          <Heading>Criar conta</Heading>
-          <Text fontFamily='Montserrat-Medium' fontSize='md' mb={16}>
-            Crie sua conta para continuar
-          </Text>
-          <VStack flexDir='column' space={6}>
-            <Controller
-              control={control}
-              name='nome'
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputField
-                  iconName='person'
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  placeholder='Nome completo'
-                  returnKeyType='next'
-                  onSubmitEnding={changeFocusToEmailInput}
-                />
-              )}
-            />
-            {errors.nome && (
-              <FormTextError messageError={errors.nome.message} />
-            )}
-            <Controller
-              control={control}
-              name='email'
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputField
-                  iconName='mail'
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  placeholder='E-mail'
-                  returnKeyType='next'
-                  onSubmitEnding={changeFocusToPasswordInput}
-                  ref={EmailInputRef}
-                />
-              )}
-            />
-            {errors.email && (
-              <FormTextError messageError={errors.email.message} />
-            )}
-            <Controller
-              control={control}
-              name='senha'
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputField
-                  iconName='lock'
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  placeholder='Senha'
-                  ref={PasswordInputRef}
-                  type='password'
-                />
-              )}
-            />
-            {errors.senha && (
-              <FormTextError messageError={errors.senha.message} />
-            )}
-          </VStack>
-          <MyButton
-            text='CRIAR CONTA'
-            onPress={handleSubmit(onSubmit)}
-            loading={isFormLoading}
-            disabled={isFormLoading}
-            icon
-          />
-          <Box flex={1}></Box>
-          <Pressable my={'10'} onPress={redirectUserToLoginPage}>
-            <Text
-              background='yellow.100'
-              textAlign='center'
-              fontFamily='Montserrat-Medium'
-            >
-              Já tem uma conta?{' '}
-              <Text color='red.500' fontFamily='Montserrat-Bold'>
-                Entrar
-              </Text>
+      <TouchableWithoutFeedback style={{ flex: 1 }} onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          flex={1}
+          px={10}
+          background='white'
+        >
+          <ScrollView>
+            <Logo />
+            <Heading>Criar conta</Heading>
+            <Text fontFamily='Montserrat-Medium' fontSize='md' mb={16}>
+              Crie sua conta para continuar
             </Text>
-          </Pressable>
-        </ScrollView>
-      </KeyboardAvoidingView>
+            <VStack flexDir='column' space={6}>
+              <Controller
+                control={control}
+                name='nome'
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    iconName='person'
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    placeholder='Nome completo'
+                    returnKeyType='next'
+                    onSubmitEnding={changeFocusToEmailInput}
+                  />
+                )}
+              />
+              {errors.nome && (
+                <FormTextError messageError={errors.nome.message} />
+              )}
+              <Controller
+                control={control}
+                name='email'
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    iconName='mail'
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    placeholder='E-mail'
+                    returnKeyType='next'
+                    onSubmitEnding={changeFocusToPasswordInput}
+                    ref={EmailInputRef}
+                  />
+                )}
+              />
+              {errors.email && (
+                <FormTextError messageError={errors.email.message} />
+              )}
+              <Controller
+                control={control}
+                name='senha'
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    iconName='lock'
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    placeholder='Senha'
+                    ref={PasswordInputRef}
+                    type='password'
+                  />
+                )}
+              />
+              {errors.senha && (
+                <FormTextError messageError={errors.senha.message} />
+              )}
+            </VStack>
+            <MyButton
+              text='CRIAR CONTA'
+              onPress={handleSubmit(onSubmit)}
+              loading={isFormLoading}
+              disabled={isFormLoading}
+              icon
+            />
+            <Box flex={1}></Box>
+            <Pressable my={'10'} onPress={redirectUserToLoginPage}>
+              <Text
+                background='yellow.100'
+                textAlign='center'
+                fontFamily='Montserrat-Medium'
+              >
+                Já tem uma conta?{' '}
+                <Text color='red.500' fontFamily='Montserrat-Bold'>
+                  Entrar
+                </Text>
+              </Text>
+            </Pressable>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     </>
   );
 }

@@ -1,6 +1,6 @@
 // React e componentes
-import React, { useEffect, useRef, useState } from 'react';
-import { Platform } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Keyboard, Platform, TouchableWithoutFeedback } from 'react-native';
 import Heading from '../components/Heading';
 import Logo from '../components/Logo';
 import MyButton from '../components/MyButton';
@@ -106,75 +106,82 @@ export default function Login({ navigation }: ILoginProps) {
   return (
     <>
       <StatusBar barStyle='dark-content' backgroundColor='white' />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        flex={1}
-        px={10}
-        background='white'
-      >
-        <ScrollView>
-          <Logo />
-          <Heading>Entrar</Heading>
-          <Text fontFamily='Montserrat-Medium' fontSize='md' mb={16}>
-            Entre na sua conta para continuar
-          </Text>
-          <VStack flexDir='column' space={errors.email || errors.senha ? 2 : 6}>
-            <Controller
-              control={control}
-              name='email'
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputField
-                  iconName='mail'
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  placeholder='E-mail'
-                  onSubmitEnding={changeFocusToPasswordInput}
-                  returnKeyType='next'
-                />
-              )}
-            />
-            {errors.email && (
-              <FormTextError messageError={errors.email.message} />
-            )}
-            <Controller
-              control={control}
-              name='senha'
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputField
-                  placeholder='Senha'
-                  returnKeyType='next'
-                  onBlur={onBlur}
-                  value={value}
-                  onChangeText={onChange}
-                  iconName='lock'
-                  type='password'
-                  ref={passwordInputRef}
-                />
-              )}
-            />
-            {errors.senha && (
-              <FormTextError messageError={errors.senha.message} />
-            )}
-          </VStack>
-          <Pressable my={2}>
-            <Text
-              w='full'
-              textAlign='right'
-              fontFamily='Montserrat-Medium'
-              mt={1}
-              color='red.500'
-            >
-              Esqueceu a senha?
+      <TouchableWithoutFeedback style={{ flex: 1 }} onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          flex={1}
+          px={10}
+          background='white'
+        >
+          <ScrollView>
+            <Logo />
+            <Heading>Entrar</Heading>
+            <Text fontFamily='Montserrat-Medium' fontSize='md' mb={16}>
+              Entre na sua conta para continuar
             </Text>
-          </Pressable>
-          <MyButton
-            text='LOGIN'
-            onPress={handleSubmit(onSubmit)}
-            disabled={isFormLoading}
-            loading={isFormLoading}
-            icon
-          />
+            <VStack
+              flexDir='column'
+              space={errors.email || errors.senha ? 2 : 6}
+            >
+              <Controller
+                control={control}
+                name='email'
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    iconName='mail'
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    placeholder='E-mail'
+                    onSubmitEnding={changeFocusToPasswordInput}
+                    returnKeyType='next'
+                  />
+                )}
+              />
+              {errors.email && (
+                <FormTextError messageError={errors.email.message} />
+              )}
+              <Controller
+                control={control}
+                name='senha'
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <InputField
+                    placeholder='Senha'
+                    returnKeyType='next'
+                    onBlur={onBlur}
+                    value={value}
+                    onChangeText={onChange}
+                    iconName='lock'
+                    type='password'
+                    ref={passwordInputRef}
+                  />
+                )}
+              />
+              {errors.senha && (
+                <FormTextError messageError={errors.senha.message} />
+              )}
+            </VStack>
+            <Pressable my={2}>
+              <Text
+                w='full'
+                textAlign='right'
+                fontFamily='Montserrat-Medium'
+                mt={1}
+                color='red.500'
+              >
+                Esqueceu a senha?
+              </Text>
+            </Pressable>
+            <MyButton
+              text='LOGIN'
+              onPress={handleSubmit(onSubmit)}
+              disabled={isFormLoading}
+              loading={isFormLoading}
+              icon
+            />
+            {/*
+           Link para a pagina de Registro - Sera implementado em outro momento
+
           <Box flex={1} bgColor={'amber.300'}></Box>
           <Pressable my={'10'} onPress={redirectUserToRegisterPage}>
             <Text
@@ -187,9 +194,10 @@ export default function Login({ navigation }: ILoginProps) {
                 Registrar
               </Text>
             </Text>
-          </Pressable>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          </Pressable> */}
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     </>
   );
 }
