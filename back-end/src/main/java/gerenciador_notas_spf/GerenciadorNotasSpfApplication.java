@@ -21,8 +21,7 @@ import org.springframework.cache.annotation.EnableCaching;
                 ),
 
                 license = @License(
-                        name = "license",
-                        url = ""
+                        name = "license"
                 )
         )
 )

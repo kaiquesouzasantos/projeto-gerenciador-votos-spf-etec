@@ -21,21 +21,27 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/relatorio")
+@RequestMapping("/classificacao")
 @RequiredArgsConstructor
-public class RelatorioController {
+public class ClassificacaoController {
     private final RelatorioService relatorioService;
     private final ApresentacaoService apresentacaoService;
     private final SalaService salaService;
 
     @GetMapping("")
-    @Cacheable("relatorio")
-    public ResponseEntity<RelatorioModel> findById(@RequestParam UUID salaId) {
+    public ResponseEntity<List<RelatorioModel>> listAll() {
+        List<RelatorioModel> relatorios = new ArrayList<>();
+
         try{
-            return ResponseEntity.status(HttpStatus.OK).body(this.getRelatorio(salaId));
+            salaService.listAll().stream().map(SalaModel::getId).forEach(
+                    (sala) -> relatorios.add(this.getRelatorio(sala))
+            );
         } catch (RuntimeException e){
             throw new ExceptionGeneric("INFORMACOES INSUFICIENTES", "APRESENTACAO NOT FOUND, INFORMACOES INSUFICIENTES", HttpStatus.NO_CONTENT.value());
         }
+
+        relatorios.sort(Comparator.comparing(RelatorioModel::getNota));
+        return ResponseEntity.status(HttpStatus.OK).body(relatorios);
     }
 
     private RelatorioModel getRelatorio(UUID salaId) {

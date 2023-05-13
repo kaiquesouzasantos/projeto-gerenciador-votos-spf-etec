@@ -29,7 +29,7 @@ public class ProfessorController {
 
     @PutMapping("")
     public ResponseEntity<ProfessorModel> update(@RequestBody ProfessorModel professor) {
-        return ResponseEntity.status(HttpStatus.OK).body(professorService.update(professor));
+        return ResponseEntity.status(HttpStatus.CREATED).body(professorService.update(professor));
     }
 
     @GetMapping("")

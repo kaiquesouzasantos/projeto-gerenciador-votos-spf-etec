@@ -35,11 +35,12 @@ public class SecurityConfig {
                         authorize ->
                                 authorize
                                         .requestMatchers(
-                                                "/professor", "/professor/**", "/apresentacao", "/apresentacao/**",
+                                                "/professor", "/professor/**",
+                                                "/apresentacao", "/apresentacao/**",
                                                 "/avaliacao", "/avaliacao/**"
                                         ).hasAnyRole("ADMIN", "PROFESSOR")
                                         .requestMatchers("/professor/save").hasAnyRole("ADMIN")
-                                        .requestMatchers("/relatorio", "/relatorio/classificado", "/sala", "/sala/**", "/professor/auth", "/apresentacao/limites").permitAll()
+                                        .requestMatchers("/relatorio",  "/classificacao", "/sala", "/sala/**", "/auth", "/limites").permitAll()
                                         .anyRequest().authenticated()
                 )
                 .headers().frameOptions().disable().and()
