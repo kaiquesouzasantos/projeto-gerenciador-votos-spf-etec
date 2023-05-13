@@ -28,6 +28,7 @@
   <img src="shared/telas/tela_relatorio_01.png" width="200">
   <img src="shared/telas/tela_relatorio_02.png" width="200">
   <img src="shared/telas/tela_relatorio_03.png" width="200">
+  <img src="shared/telas/tela_classificacao.png" width="200">
 </p>
 
 #
