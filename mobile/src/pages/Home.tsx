@@ -40,6 +40,8 @@ import { RootStackParamList } from '../../App';
 import { axiosClient } from '../libs/axios';
 import { axiosProfessor } from '../libs/axiosProfessor';
 import { Limites } from '../interfaces/limites';
+import { Apresentacao } from '../interfaces/apresentacao';
+import axios from 'axios';
 
 const avaliacaoFormSchema = zod.object({
   nota: zod.string().nonempty({ message: 'Campo obrigatório' }),
@@ -87,10 +89,19 @@ export default function Home({ navigation }: IHomeProps) {
 
     //Busca todas as apresentaçoes e armazena no estado apresentations
     (async () => {
-      const response: AxiosReponseApresentacaoAll = await axiosClient.get(
-        'apresentacao/all'
+      const response = await fetch(
+        'https://gerenciadornotasspfmain-production.up.railway.app/apresentacao/all',
+        {
+          headers: {
+            Authorization:
+              'Basic YWRtaW46TkNCSnN0c0hvQ05vZUhzeXkzckhxR1NLOGRCQ2ZVbEo=',
+          },
+        }
       );
-      const apresentacoes = response.data.map((apresentacao) => {
+
+      const data = (await response.json()) as Apresentacao[];
+
+      const apresentacoes = data.map((apresentacao) => {
         return {
           id: apresentacao.id,
           nome: apresentacao.nome,
@@ -102,7 +113,7 @@ export default function Home({ navigation }: IHomeProps) {
 
     //Busca informaçoes sobre a nota maxima de cada apresentação e armazena no estado limites
     (async () => {
-      const response = await axiosClient.get('apresentacao/limites');
+      const response = await axiosClient.get('limites');
       setLimites(response.data);
     })();
   }, []);
@@ -126,11 +137,13 @@ export default function Home({ navigation }: IHomeProps) {
       Number(nota) <= limites[selectedApresentationName]
     ) {
       try {
-        const response = await axiosProfessor.post('avaliacao/save', {
+        const response = await axios.post('https://gerenciadornotasspfmain-production.up.railway.app/avaliacao/save', {
           avaliacao,
           nota: Number(nota),
           apresentacao: selectedApresentationId,
           professor: params.UserId,
+        }, {
+          headers: {Authorization: 'Basic YWRtaW46TkNCSnN0c0hvQ05vZUhzeXkzckhxR1NLOGRCQ2ZVbEo='}
         });
 
         if (response.status === 201) {
@@ -185,6 +198,8 @@ export default function Home({ navigation }: IHomeProps) {
             textBody: 'Ocorreu um erro. Tente novamente mais tarde',
             button: 'OK',
           });
+          console.log(error.response.status);
+
         }
         setSelectedApresentationId('');
       }
@@ -198,7 +213,8 @@ export default function Home({ navigation }: IHomeProps) {
       setError('nota', {
         message:
           'A nota não pode ser maior do que ' +
-          limites[selectedApresentationName].toFixed(2) + ' pontos'
+          limites[selectedApresentationName].toFixed(2) +
+          ' pontos',
       });
       setIsFormLoading(false);
       return;

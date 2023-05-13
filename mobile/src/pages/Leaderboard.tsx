@@ -35,7 +35,7 @@ export default function Leaderboard({ navigation }: ILeaderBoardProps) {
 
   async function fetchLeaderboard() {
     const { data } = (await axiosClient.get(
-      '/relatorio/classificacao'
+      'classificacao'
     )) as AxiosResponseClassificacao;
     return data;
   }

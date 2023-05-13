@@ -68,14 +68,22 @@ export default function Login({ navigation }: ILoginProps) {
     setIsFormLoading(true);
     try {
       const result = await axiosClient.get(
-        `professor/auth?email=${formData.email}&senha=${encodeURIComponent(
+        `auth?email=${formData.email}&senha=${encodeURIComponent(
           formData.senha
         )}`
       );
       if (result.status === 200) {
-        const { data } = (await axiosClient.get(
-          `professor/email?email=${formData.email}`
-        )) as AxiosResponseProfessor;
+        const response = await fetch(
+          'https://gerenciadornotasspfmain-production.up.railway.app/professor/email?email=teste@gmail.com',
+          {
+            headers: {
+              Authorization:
+                'Basic YWRtaW46TkNCSnN0c0hvQ05vZUhzeXkzckhxR1NLOGRCQ2ZVbEo=',
+            },
+          }
+        );
+  
+        const data = await response.json();
 
         await AsyncStorage.setItem('@loggedUserData', JSON.stringify(data));
 
@@ -90,7 +98,7 @@ export default function Login({ navigation }: ILoginProps) {
         });
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.response);
     }
     setIsFormLoading(false);
   }

@@ -14,6 +14,6 @@ const buffer = Buffer.from(credentials, 'utf-8');
 const base64 = buffer.toString('base64');
 
 export const axiosProfessor = axios.create({
-  baseURL: 'https://gerenciadornotasspfbackend-production.up.railway.app',
-  headers: { Authorization: `Basic ${base64}` },
+  baseURL: 'http://gerenciadornotasspfmain-production.up.railway.app',
+  headers: {Authorization: 'Basic YWRtaW46TkNCSnN0c0hvQ05vZUhzeXkzckhxR1NLOGRCQ2ZVbEo='}
 });
