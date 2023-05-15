@@ -19,11 +19,6 @@ import java.util.UUID;
 public class AvaliacaoController {
     private final AvaliacaoService avaliacaoService;
 
-    @GetMapping("")
-    public ResponseEntity<AvaliacaoModel> findById(@RequestParam UUID id) {
-        return ResponseEntity.status(HttpStatus.OK).body(avaliacaoService.findById(id));
-    }
-
     @PostMapping("/save")
     @CacheEvict(value = "relatorio", allEntries = true)
     public ResponseEntity<AvaliacaoModel> save(@RequestBody @Valid AvaliacaoDTO avaliacao) {
@@ -37,9 +32,15 @@ public class AvaliacaoController {
     }
 
     @DeleteMapping("")
+    @CacheEvict(value = "relatorio", allEntries = true)
     public ResponseEntity<Void> delete(@RequestParam UUID id) {
         avaliacaoService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+    }
+    
+    @GetMapping("")
+    public ResponseEntity<AvaliacaoModel> findById(@RequestParam UUID id) {
+        return ResponseEntity.status(HttpStatus.OK).body(avaliacaoService.findById(id));
     }
 
     @GetMapping("/all")
