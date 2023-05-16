@@ -37,6 +37,9 @@
 ![React Native](https://img.shields.io/badge/react_native-0D1117?style=for-the-badge&logo=react&labelColor=0D1117&textColor=0D1117)&nbsp;
 ![TypeScript](https://img.shields.io/badge/TypeScript-0D1117?style=for-the-badge&logo=typescript&labelColor=0D1117&textColor=0D1117)&nbsp;
 ![NativeBase](https://img.shields.io/badge/NativeBase-0D1117?style=for-the-badge&logo=nativebase&labelColor=0D1117&textColor=0D1117)&nbsp;
+![React Hook Form](https://img.shields.io/badge/React%20Hook%20Form-0D1117?style=for-the-badge&logo=reacthookform&logoColor=EC5990)
+![React Query](https://img.shields.io/badge/-React%20Query-0D1117?style=for-the-badge&logo=react%20query&logoColor=white)
+![Expo](https://img.shields.io/badge/expo-0D1117?style=for-the-badge&logo=expo&logoColor=#D04A37)
 
 ![Java](https://img.shields.io/badge/Java-0D1117?style=for-the-badge&logo=openjdk&logoColor=white&labelColor=0D1117)&nbsp;
 ![Spring](https://img.shields.io/badge/Spring-0D1117?style=for-the-badge&logo=spring&logoColor=107C10&labelColor=0D1117)&nbsp;
