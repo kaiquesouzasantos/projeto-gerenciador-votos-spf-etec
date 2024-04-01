@@ -7,7 +7,7 @@
 #
 ### SOBRE
 
-- Projeto desenvolvido com o objetivo de melhorar o funcionamento de votação e auditoria das apresentações realizadas na Semana Paulo Freire, possibilitando uma melhor experiência dos participantes nessa sequência de demonstrações culturais e lúdicas.
+- Sistema multiplataforma para a Semana Paulo Freire, implantado em maio de 2023, visando aprimorar o processo de votação das apresentações do evento de forma ágil, auditável e transparente para a comunidade escolar. O projeto seguiu metodologias Scrum e Extreme Programming, utilizando tecnologias Spring e React Native.
 - O período de levantamento de requisitos e desenvolvimento foi de 05/04/2023 até 15/04/2023.
 - O projeto foi solicitado pelo professor do curso MTEC-Desenvolvimento de Sistemas na Etec Cidade Tiradentes, Everson Willian Pereira Bacelli.
 
