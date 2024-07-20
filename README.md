@@ -5,20 +5,20 @@
 </p>
 
 #
-### SOBRE
+### 📚 SOBRE
 
 - Sistema multiplataforma para a Semana Paulo Freire, implantado em maio de 2023, visando aprimorar o processo de votação das apresentações do evento de forma ágil, auditável e transparente para a comunidade escolar. O projeto seguiu metodologias Scrum e Extreme Programming, utilizando tecnologias Spring e React Native.
 - O período de levantamento de requisitos e desenvolvimento foi de 05/04/2023 até 15/04/2023.
 - O projeto foi solicitado pelo professor do curso MTEC-Desenvolvimento de Sistemas na Etec Cidade Tiradentes, Everson Willian Pereira Bacelli.
 
 #
-### DESENVOLVEDORES
+### 🦺 DESENVOLVEDORES
 
 - <b>*Back-End*</b>: Kaique Souza Santos
 - <b>*Mobile*</b>: Wiliam Melo da Mota
 
 #
-### TELAS
+### 🖥️ TELAS
 
 <p align="center">
   <img src="shared/telas/tela_inicial.png" width="200">
@@ -32,7 +32,7 @@
 </p>
 
 #
-### TECNOLOGIAS
+### 💻 TECNOLOGIAS
 
 ![React Native](https://img.shields.io/badge/react_native-0D1117?style=for-the-badge&logo=react&labelColor=0D1117&textColor=0D1117)&nbsp;
 ![TypeScript](https://img.shields.io/badge/TypeScript-0D1117?style=for-the-badge&logo=typescript&labelColor=0D1117&textColor=0D1117)&nbsp;
@@ -51,14 +51,14 @@
 ![POSTGRESQL](https://img.shields.io/badge/PostgreSQL-0D1117?style=for-the-badge&logo=postgresql&labelColor=0D1117)&nbsp;
 
 #
-### DOCUMENTACAO DA API
+### 📋 DOCUMENTACAO DA API
 
 ```
 <host>:<porta>/swagger-ui/index.html#
 ```
 
 #
-### CONTRIBUIÇÃO
+### 🔗 CONTRIBUIÇÃO
 
 ```
 $ git clone https://github.com/kaiquesouzasantos/projeto-gerenciador-votos-spf-etec-ct.git
