@@ -1,4 +1,4 @@
-<h1 align=center>🧮 ETEC CIDADE TIRADENTES - PROJETO GERENCIADOR DE VOTOS PARA SPF</h1>
+<h1 align=center>🧮 ETEC CIDADE TIRADENTES - GERENCIADOR DE VOTOS PARA SPF</h1>
 
 <p align="center">
   <img src="etec.png" width="500">
