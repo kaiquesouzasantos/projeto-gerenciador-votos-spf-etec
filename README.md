@@ -1,4 +1,4 @@
-<h1 align=center>PROJETO-GERENCIADOR-DE-VOTOS-SPF</h1>
+<h1 align=center>🧮 ETEC CIDADE TIRADENTES - PROJETO GERENCIADOR DE VOTOS PARA SPF</h1>
 
 <p align="center">
   <img src="etec.png" width="500">
@@ -61,5 +61,5 @@
 ### 🔗 CONTRIBUIÇÃO
 
 ```
-$ git clone https://github.com/kaiquesouzasantos/projeto-gerenciador-votos-spf-etec-ct.git
+$ git clone https://github.com/kaiquesouzasantos/projeto-gerenciador-votos-spf-etec.git
 ```
